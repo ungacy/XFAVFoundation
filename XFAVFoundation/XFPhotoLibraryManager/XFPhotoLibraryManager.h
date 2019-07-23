@@ -8,16 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
-typedef void(^RequestAssetsLibraryAuthCompletion)(Boolean isAuth);
-typedef void(^SavePhotoCompletionBlock)(UIImage *image, NSError *error);
-typedef void(^SaveVideoCompletionBlock)(NSURL *vedioUrl, NSError *error);
+typedef void (^RequestAssetsLibraryAuthCompletion)(Boolean isAuth);
+typedef void (^SavePhotoCompletionBlock)(UIImage *image, NSError *error);
+typedef void (^SaveVideoCompletionBlock)(NSURL *vedioUrl, NSError *error);
 
 @interface XFPhotoLibraryManager : NSObject
 
 /**
  *  请求照片权限，注意，强烈要求用户获得照片权限，否则视频写入照片会有崩溃
  */
-+ (void)requestALAssetsLibraryAuthorizationWithCompletion:(RequestAssetsLibraryAuthCompletion) requestAssetsLibraryAuthCompletion;
++ (void)requestALAssetsLibraryAuthorizationWithCompletion:(RequestAssetsLibraryAuthCompletion)requestAssetsLibraryAuthCompletion;
 
 /**
  *  保存照片

@@ -13,7 +13,7 @@
  *
  *  @param image 拍照后返回的image
  */
-typedef void(^TakePhotosCompletionBlock)(UIImage *image, NSError *error);
+typedef void (^TakePhotosCompletionBlock)(UIImage *image, NSError *error);
 
 /**
  *  拍摄完成后的Block回调
@@ -22,7 +22,7 @@ typedef void(^TakePhotosCompletionBlock)(UIImage *image, NSError *error);
  *  @param videoTimeLength 小视频时长
  *  @param thumbnailImage 小视频缩略图
  */
-typedef void(^ShootCompletionBlock)(NSURL *videoUrl, CGFloat videoTimeLength, UIImage *thumbnailImage, NSError *error);
+typedef void (^ShootCompletionBlock)(NSURL *videoUrl, CGFloat videoTimeLength, UIImage *thumbnailImage, NSError *error);
 
 @interface XFCameraController : UIViewController
 

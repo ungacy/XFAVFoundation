@@ -1,6 +1,6 @@
 //
 //  XFCameraButton.h
-//  
+//
 //
 //  Created by xf-ling on 2017/6/1.
 //  Copyright © 2017年 LXF. All rights reserved.
@@ -8,8 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-typedef void(^TapEventBlock)(UITapGestureRecognizer *tapGestureRecognizer);
-typedef void(^LongPressEventBlock)(UILongPressGestureRecognizer *longPressGestureRecognizer);
+typedef void (^TapEventBlock)(UITapGestureRecognizer *tapGestureRecognizer);
+typedef void (^LongPressEventBlock)(UILongPressGestureRecognizer *longPressGestureRecognizer);
 
 @interface XFCameraButton : UIView
 
