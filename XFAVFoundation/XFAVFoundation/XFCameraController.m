@@ -14,13 +14,24 @@
 #import <CoreMotion/CoreMotion.h>
 #import <Photos/Photos.h>
 
+static inline BOOL ISiPhoneX() {
+    if (@available(iOS 11.0, *)) {
+        UIWindow *keyWindow = [[[UIApplication sharedApplication] delegate] window];
+        // 获取底部安全区域高度，iPhone X 竖屏下为 34.0，横屏下为 21.0，其他类型设备都为 0
+        CGFloat bottomSafeInset = keyWindow.safeAreaInsets.bottom;
+        if (bottomSafeInset == 34.0f || bottomSafeInset == 21.0f) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 #define kScreenWidth [UIScreen mainScreen].bounds.size.width
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
-#define SafeViewBottomHeight (kScreenHeight == 812.0 ? 34.0 : 0.0)
-#define iSiPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
+#define SafeViewBottomHeight (ISiPhoneX() ? 34.0 : 0.0)
 #define VIDEO_FILEPATH @"video"
 #define TIMER_INTERVAL 0.01f                // 定时器记录视频间隔
-#define VIDEO_RECORDER_MAX_TIME 10.0f       // 视频最大时长 (单位/秒)
+#define VIDEO_RECORDER_MAX_TIME 15.0f       // 视频最大时长 (单位/秒)
 #define VIDEO_RECORDER_MIN_TIME 1.0f        // 最短视频时长 (单位/秒)
 #define START_VIDEO_ANIMATION_DURATION 0.3f // 录制视频前的动画时间
 #define DEFAULT_VIDEO_ZOOM_FACTOR 3.0f      // 默认放大倍数
@@ -50,6 +61,7 @@ typedef void (^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 @property (strong, nonatomic) AVCaptureVideoPreviewLayer *captureVideoPreviewLayer; //预览图层
 
 @property (nonatomic, strong) NSTimer *timer; //记录录制时间
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *takeButtongBottomConstraint;
 
 @property (weak, nonatomic) IBOutlet UIView *viewContainer;
 @property (weak, nonatomic) IBOutlet UIButton *rotateCameraButton;
@@ -92,8 +104,15 @@ typedef void (^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 
 + (instancetype)defaultCameraController {
     XFCameraController *cameraController = [[XFCameraController alloc] initWithNibName:@"XFCameraController" bundle:nil];
-
     return cameraController;
+}
+
+- (instancetype)init {
+    self = [super initWithNibName:@"XFCameraController" bundle:nil];
+    if (self) {
+        _autoSaveToAlbum = YES;
+    }
+    return self;
 }
 
 #pragma mark - 控制器方法
@@ -111,6 +130,7 @@ typedef void (^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     _canWrite = NO;
     _beginGestureScale = 1.0f;
     _effectiveScale = 1.0f;
+    _takeButtongBottomConstraint.constant = 36 + SafeViewBottomHeight;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -162,7 +182,7 @@ typedef void (^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 }
 
 - (void)dealloc {
-    NSLog(@"dealloc");
+    //NSLog(@"dealloc");
 }
 
 - (void)didReceiveMemoryWarning {
@@ -223,6 +243,21 @@ typedef void (^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
  *  确认按钮并返回代理
  */
 - (IBAction)confirmBtnFunc:(id)sender {
+    if (!self.autoSaveToAlbum) {
+        if (self.photoPreviewImageView) {
+            if (self.takePhotosCompletionBlock) {
+                UIImage *finalImage = [self cutImageWithView:self.photoPreviewImageView];
+                self.takePhotosCompletionBlock(finalImage, nil);
+            }
+        } else {
+            // 获取视频的第一帧图片
+            UIImage *image = [self thumbnailImageRequestWithVideoUrl:self.videoURL andTime:0.01f];
+            if (self.shootCompletionBlock) {
+                self.shootCompletionBlock(self.videoURL, self.currentVideoTimeLength, image, nil);
+            }
+        }
+        return;
+    }
     __weak typeof(self) weakSelf = self;
     if (self.photoPreviewImageView) {
         UIImage *finalImage = [self cutImageWithView:self.photoPreviewImageView];
@@ -230,7 +265,7 @@ typedef void (^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
         [XFPhotoLibraryManager savePhotoWithImage:finalImage
                            andAssetCollectionName:self.assetCollectionName
                                    withCompletion:^(UIImage *image, NSError *error) {
-                                       if (self.takePhotosCompletionBlock) {
+                                       if (weakSelf.takePhotosCompletionBlock) {
                                            if (error) {
                                                NSLog(@"保存照片失败!");
                                                weakSelf.takePhotosCompletionBlock(nil, error);
@@ -252,7 +287,7 @@ typedef void (^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
                                    [XFPhotoLibraryManager saveVideoWithVideoUrl:outputURL
                                                          andAssetCollectionName:nil
                                                                  withCompletion:^(NSURL *videoUrl, NSError *error) {
-                                                                     if (self.shootCompletionBlock) {
+                                                                     if (weakSelf.shootCompletionBlock) {
                                                                          if (error) {
                                                                              NSLog(@"保存视频失败!");
                                                                              weakSelf.shootCompletionBlock(nil, 0, nil, error);
@@ -750,23 +785,18 @@ typedef void (^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 
     self.assetWriter = [AVAssetWriter assetWriterWithURL:self.videoURL fileType:AVFileTypeMPEG4 error:nil];
     //写入视频大小
-    NSInteger numPixels = kScreenWidth * kScreenHeight;
-
-    //每像素比特
-    CGFloat bitsPerPixel = 12.0;
-    NSInteger bitsPerSecond = numPixels * bitsPerPixel;
-
-    // 码率和帧率设置
-    NSDictionary *compressionProperties = @{ AVVideoAverageBitRateKey: @(bitsPerSecond),
-                                             AVVideoExpectedSourceFrameRateKey: @(15),
-                                             AVVideoMaxKeyFrameIntervalKey: @(15),
-                                             AVVideoProfileLevelKey: AVVideoProfileLevelH264BaselineAutoLevel };
     CGFloat width = kScreenHeight;
     CGFloat height = kScreenWidth;
-    if (iSiPhoneX) {
+    if (ISiPhoneX()) {
         width = kScreenHeight - 146;
         height = kScreenWidth;
     }
+
+    // 码率和帧率设置
+    NSDictionary *compressionProperties = @{ AVVideoAverageBitRateKey: @(1.26 * 1024 * 1024),
+                                             AVVideoExpectedSourceFrameRateKey: @(30),
+                                             AVVideoMaxKeyFrameIntervalKey: @(30),
+                                             AVVideoProfileLevelKey: AVVideoProfileLevelH264High41 };
     //视频属性
     self.videoCompressionSettings = @{ AVVideoCodecKey: AVVideoCodecH264,
                                        AVVideoWidthKey: @(width * 2),
@@ -1372,26 +1402,26 @@ typedef void (^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
                                                          //                 NSLog(@"y:%lf", y);
                                                          if (y >= 0.1f) {
                                                              // Down
-                                                             NSLog(@"Down");
+                                                             //NSLog(@"Down");
                                                              _shootingOrientation = UIDeviceOrientationPortraitUpsideDown;
                                                          } else {
                                                              // Portrait
-                                                             NSLog(@"Portrait");
+                                                             //NSLog(@"Portrait");
                                                              _shootingOrientation = UIDeviceOrientationPortrait;
                                                          }
                                                      } else {
                                                          //                 NSLog(@"x:%lf", x);
                                                          if (x >= 0.1f) {
                                                              // Right
-                                                             NSLog(@"Right");
+                                                             //NSLog(@"Right");
                                                              _shootingOrientation = UIDeviceOrientationLandscapeRight;
                                                          } else if (x <= 0.1f) {
                                                              // Left
-                                                             NSLog(@"Left");
+                                                             //NSLog(@"Left");
                                                              _shootingOrientation = UIDeviceOrientationLandscapeLeft;
                                                          } else {
                                                              // Portrait
-                                                             NSLog(@"Portrait");
+                                                             //NSLog(@"Portrait");
                                                              _shootingOrientation = UIDeviceOrientationPortrait;
                                                          }
                                                      }

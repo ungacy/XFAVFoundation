@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -17,6 +17,7 @@
                 <outlet property="focusImageView" destination="cDi-p1-6Ox" id="XV1-1E-oXu"/>
                 <outlet property="rotateCameraButton" destination="Gww-tC-G56" id="7T0-7W-Hy1"/>
                 <outlet property="takeButton" destination="VBb-wh-QTG" id="9TQ-RR-Fqj"/>
+                <outlet property="takeButtongBottomConstraint" destination="CaZ-uQ-hRv" id="UYH-IK-PuR"/>
                 <outlet property="tipLabel" destination="eSc-bP-yDA" id="qwh-94-ix8"/>
                 <outlet property="view" destination="Rcc-g1-Gwv" id="ghA-gY-bGN"/>
                 <outlet property="viewContainer" destination="Rcc-g1-Gwv" id="5Kf-Ym-SqA"/>
@@ -50,7 +51,7 @@
                     </connections>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="点击拍照，长按摄像" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eSc-bP-yDA">
-                    <rect key="frame" x="122.5" y="484" width="129" height="17"/>
+                    <rect key="frame" x="123" y="474" width="129" height="17"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
@@ -60,7 +61,7 @@
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 </imageView>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t5x-fn-77d">
-                    <rect key="frame" x="40" y="531" width="76" height="76"/>
+                    <rect key="frame" x="40" y="533" width="76" height="76"/>
                     <state key="normal" image="icon_return_n"/>
                     <state key="highlighted" image="icon_return_p"/>
                     <connections>
@@ -68,7 +69,7 @@
                     </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q3i-Ao-Rf9">
-                    <rect key="frame" x="259" y="531" width="76" height="76"/>
+                    <rect key="frame" x="259" y="533" width="76" height="76"/>
                     <state key="normal" image="icon_finish_p"/>
                     <connections>
                         <action selector="confirmBtnFunc:" destination="-1" eventType="touchUpInside" id="wIP-aa-UUf"/>
@@ -78,27 +79,27 @@
             <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
             <constraints>
                 <constraint firstItem="Gww-tC-G56" firstAttribute="leading" secondItem="VBb-wh-QTG" secondAttribute="trailing" constant="50" id="5YP-gE-nk4"/>
-                <constraint firstAttribute="bottom" secondItem="q3i-Ao-Rf9" secondAttribute="bottom" constant="60" id="7mE-lr-tsA"/>
                 <constraint firstItem="t5x-fn-77d" firstAttribute="leading" secondItem="Rcc-g1-Gwv" secondAttribute="leading" constant="40" id="8K4-nl-leS"/>
                 <constraint firstAttribute="bottom" secondItem="VBb-wh-QTG" secondAttribute="bottom" constant="36" id="CaZ-uQ-hRv"/>
-                <constraint firstAttribute="bottom" secondItem="t5x-fn-77d" secondAttribute="bottom" constant="60" id="GCx-2F-ur9"/>
                 <constraint firstItem="VBb-wh-QTG" firstAttribute="centerX" secondItem="eSc-bP-yDA" secondAttribute="centerX" id="T8h-f0-n73"/>
                 <constraint firstItem="VBb-wh-QTG" firstAttribute="centerY" secondItem="Gww-tC-G56" secondAttribute="centerY" id="Un0-4d-Flg"/>
-                <constraint firstItem="VBb-wh-QTG" firstAttribute="top" secondItem="eSc-bP-yDA" secondAttribute="bottom" constant="10" id="dAy-aj-jwJ"/>
+                <constraint firstItem="VBb-wh-QTG" firstAttribute="top" secondItem="eSc-bP-yDA" secondAttribute="bottom" constant="20" id="dAy-aj-jwJ"/>
+                <constraint firstItem="q3i-Ao-Rf9" firstAttribute="centerY" secondItem="VBb-wh-QTG" secondAttribute="centerY" id="fzj-r1-88S"/>
                 <constraint firstItem="VBb-wh-QTG" firstAttribute="centerX" secondItem="Rcc-g1-Gwv" secondAttribute="centerX" id="h90-Ju-sbR"/>
                 <constraint firstItem="VBb-wh-QTG" firstAttribute="leading" secondItem="pjC-ZM-eD4" secondAttribute="trailing" constant="40" id="kKG-aY-rY5"/>
                 <constraint firstItem="VBb-wh-QTG" firstAttribute="centerY" secondItem="pjC-ZM-eD4" secondAttribute="centerY" id="lFa-Se-NKA"/>
                 <constraint firstAttribute="trailing" secondItem="q3i-Ao-Rf9" secondAttribute="trailing" constant="40" id="seU-jH-g83"/>
+                <constraint firstItem="t5x-fn-77d" firstAttribute="centerY" secondItem="VBb-wh-QTG" secondAttribute="centerY" id="ujJ-45-bEu"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <nil key="simulatedTopBarMetrics"/>
             <nil key="simulatedBottomBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="-99.5" y="20.5"/>
+            <point key="canvasLocation" x="-100.72463768115942" y="20.424107142857142"/>
         </view>
     </objects>
     <resources>
-        <image name="icon_change" width="26" height="20"/>
+        <image name="icon_change" width="26.5" height="20"/>
         <image name="icon_finish_p" width="76" height="76"/>
         <image name="icon_return_n" width="76" height="76"/>
         <image name="icon_return_p" width="76" height="76"/>

@@ -26,6 +26,8 @@ typedef void (^ShootCompletionBlock)(NSURL *videoUrl, CGFloat videoTimeLength, U
 
 @interface XFCameraController : UIViewController
 
+@property (assign, nonatomic) BOOL autoSaveToAlbum; //default is `NO`
+
 /**
  *  拍照完成后的Block回调
  */
